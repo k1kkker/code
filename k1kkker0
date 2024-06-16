@@ -1,0 +1,149 @@
+#1. Data import
+
+import pandas as pd
+import numpy as np
+import random
+from matplotlib import pyplot as plt
+from pyecharts.charts import Boxplot
+from sklearn.model_selection import train_test_split
+from sklearn.datasets import load_boston
+
+df= pd.read_csv("C:\Users\10906\Desktop\dataset123.csv")
+df.head(10)
+
+#2. Remove duplicate and missing values
+
+df.reset_index(drop=True,inplace=True)
+df.drop_duplicates(inplace=True)
+df.replace('nan',np.nan,inplace=True) 
+#Replace the values of gender, age, and user history with random dummy variables, mean, and random dummy variables, respectively
+df.fillna(value={"age":round(df["age"].mean(),0),"gender":random.choice([1.0,0.0]),"engaged_last_30":random.choice([1.0,0.0])},inplace=True)
+df.head(10)
+
+#3. Simplify name
+
+df=df.rename(columns={"engaged_last_30": "engage", df.keys()[5]: "last_order", "previous_order_amount":"accumulation", "3rd_party_stores":"3rd"})
+#Simplify the naming of some columns for easier drawing and processing in the future
+df.head()
+df.dtypes
+
+#4. Analyze the relationship between a single variable and profit
+
+#Use matrix plot to roughly examine the linear relationship between variables
+import plotly.express as px
+Fig=px. scatter_matrix (df)
+Fig.show()
+
+#a.Analyze the relationship between each individual variable and revenue
+#gender
+plt.scatter(df['gender'], df['revenue'], color='blue')
+plt.title('gender Vs revenue', fontsize=15)
+plt.xlabel('gender', fontsize=15)
+plt.ylabel('revenue', fontsize=15)
+plt.grid(True)
+plt.show()
+
+#age
+plt.scatter(df['age'], df['revenue'], color='green')
+plt.title('age Vs revenue', fontsize=15)
+plt.xlabel('age', fontsize=15)
+plt.ylabel('revenue', fontsize=15)
+plt.grid(True)
+plt.show()
+
+#lifecycle
+plt.scatter(df['lifecycle'], df['revenue'], color='pink')
+plt.title('lifecycle Vs revenue', fontsize=15)
+plt.xlabel('lifecycle', fontsize=15)
+plt.ylabel('revenue', fontsize=15)
+plt.grid(True)
+plt.show()
+
+#days from the last order
+plt.scatter(df['last_order'], df['revenue'], color='purple')
+plt.title('days from the last order Vs revenue', fontsize=15)
+plt.xlabel('last_order', fontsize=15)
+plt.ylabel('revenue', fontsize=15)
+plt.grid(True)
+plt.show()
+
+#previous amount of consumption
+plt.scatter(df['accumulation'], df['revenue'], color='red')
+plt.title('previous amount of consumption Vs revenue', fontsize=15)
+plt.xlabel('accumulation', fontsize=15)
+plt.ylabel('revenue', fontsize=15)
+plt.grid(True)
+plt.show()
+
+#engagement in the last 30 days
+plt.scatter(df['engage'], df['revenue'], color='orange')
+plt.title('engagement in the last 30 days Vs revenue', fontsize=15)
+plt.xlabel('engage', fontsize=15)
+plt.ylabel('revenue', fontsize=15)
+plt.grid(True)
+plt.show()
+
+#3rd party consumption
+plt.scatter(df['3rd'], df['revenue'], color='grey')
+plt.title('3rd party consumption Vs revenue', fontsize=15)
+plt.xlabel('3rd party', fontsize=15)
+plt.ylabel('revenue', fontsize=15)
+plt.grid(True)
+plt.show()
+
+df.head()
+
+#b.The relationship between multiple variable combinations and profits
+
+#"Age" with "Gender"
+df[df['gender'] == 1.0].age.plot(kind='hist', color='blue', edgecolor='black', alpha=0.5, figsize=(10, 7))
+df[df['gender'] == 0.0].age.plot(kind='hist', color='magenta', edgecolor='black', alpha=0.5, figsize=(10, 7))
+plt.legend(labels=['Males', 'Females'])
+plt.title('Distribution of age', size=24)
+plt.xlabel('age', size=18)
+plt.ylabel('revenue', size=18)
+
+#"Engage with Previous order amount" with "Engage"
+df[df['lifecycle'] == 'A'].accumulation.plot(kind='hist', color='blue', edgecolor='black', alpha=0.5, figsize=(10, 7))
+df[df['lifecycle'] == 'B'].accumulation.plot(kind='hist', color='magenta', edgecolor='black', alpha=0.5, figsize=(10, 7))
+plt.legend(labels=['engage', 'not engage'])
+plt.title('Distribution of previous order amount', size=24)
+plt.xlabel('previous order amount', size=18)
+plt.ylabel('revenue', size=18)
+
+acdiff=df.groupby("engage")['revenue'].mean().sort_values()
+acdiff
+
+#"Days since last order" with "Last order"
+df[df['lifecycle'] == 'A'].last_order.plot(kind='hist', color='red', edgecolor='black', alpha=0.5, figsize=(10, 7))
+df[df['lifecycle'] == 'B'].last_order.plot(kind='hist', color='blue', edgecolor='black', alpha=0.5, figsize=(10, 7))
+df[df['lifecycle'] == 'C'].last_order.plot(kind='hist', color='pink', edgecolor='black', alpha=0.5, figsize=(10, 7))
+plt.legend(labels=['A','B','C'])
+plt.title('Distribution of days since last order', size=24)
+plt.xlabel('last order', size=18)
+plt.ylabel('revenue', size=18)
+#A: Within six months of registration, B: Within one year of registration, C: Within two years of registration
+cyclediff= df.groupby("lifecycle")['revenue'].mean().sort_values()
+cyclediff
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
