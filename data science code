@@ -14,6 +14,7 @@ df.head(10)
 df= pd.read_csv("C:\Users\10906\Desktop\dataset456.csv")
 df.head(10)
 #Here are two datasets. The first dataset is randomly collected on a two-yearly basis, and the second dataset is collected over the past three months to validate the analysis results.
+#Taking the first ten pieces of data in this code as an example.
 
 #2. Remove duplicate and missing values
 
