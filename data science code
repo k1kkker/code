@@ -131,7 +131,40 @@ plt.ylabel('revenue', size=18)
 cyclediff= df.groupby("lifecycle")['revenue'].mean().sort_values()
 cyclediff
 
+#5. Analyzing Datasets with Multilinear Models
 
+from sklearn.preprocessing import MultiLabelBinarizer
+mlb = MultiLabelBinarizer()
+array_out = mlb.fit_transform(df["lifecycle"])
+df_out = pd.DataFrame(data=array_out, columns=mlb.classes_)
+df_out
+
+df = pd.concat([df_out, df], axis=1)#Merge two dataframes
+df1= df.drop(columns=['lifecycle'])#Remove the original lifecycle column
+df1.head()
+
+from sklearn import linear_model
+X = df[['gender','age', 'engage', 'accumulation', '3rd', 'A','B','C', 'last_order']] 
+Y = df['revenue']
+regr = linear_model.LinearRegression()
+result = regr.fit(X, Y)
+print('Intercept: \n', regr.intercept_)
+print('Coefficients: \n', regr.coef_)
+#X1 to x8 correspond to gender and third-party purchase quantity, respectively. As long as gender, age, participation in activities, past purchase amount, third-party purchase quantity, and eight variables a, b, and c are known, the user's purchase amount can be predicted.
+
+from sklearn import datasets, linear_model
+from sklearn.linear_model import LinearRegression
+import statsmodels.api as sm
+from scipy import stats
+
+X2 = sm.add_constant(X) 
+est = sm.OLS(Y, X2)
+est2 = est.fit()
+print("summary()\n",est2.summary())
+print("pvalues\n",est2.pvalues)
+print("tvalues\n",est2.tvalues)
+print("rsquared\n",est2.rsquared)
+print("rsquared_adj\n",est2.rsquared_adj)
 
 
 
